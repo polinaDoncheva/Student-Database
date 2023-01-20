@@ -1,6 +1,0 @@
-Enter one of the following numbers:
-1.Add a new student.
-2.Remove a current student.
-3.Sort group of students.
-4.Print group of students.
-5.Sort students from different groups.
