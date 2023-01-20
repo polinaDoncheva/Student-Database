@@ -159,6 +159,7 @@ void putSubjectsIntoStruct(string line, Student& student) {
 	}
 }
 
+//reading file with students from one group and putting them in array
 void putSudentsFromFileInStruct(int group, Student* students, int& indexOfCurrentStudent) {
 	string path = findPath(group);
 	fstream myFile(path, ios::in | ios::app | ios::out);
@@ -192,6 +193,7 @@ bool isFirstStringBigger(string first, string second) {
 	return true;
 }
 
+//calculating average grades of students in one group
 void findAverageGrades(Student* students) {
 	int counter;
 	double average;
@@ -215,6 +217,7 @@ void swap(Student& firstStudent, Student& secondStudent) {
 	secondStudent = temp;
 }
 
+//sorting by faculty number both in ascending and descending order
 void sortStudentsByFacultyNumber(Student* students, string sortMethod, int countOfStudents) {
 	for (int i = 0; i < countOfStudents; i++)
 	{
@@ -232,6 +235,7 @@ void sortStudentsByFacultyNumber(Student* students, string sortMethod, int count
 	}
 }
 
+//sorting by average grade both in ascending and descending order 
 void sortStudentsByAverageGrade(Student* students, string sortMethod, int countOfStudents) {
 	findAverageGrades(students);
 	for (int i = 0; i < countOfStudents; i++)
@@ -250,6 +254,8 @@ void sortStudentsByAverageGrade(Student* students, string sortMethod, int countO
 	}
 }
 
+
+//sorting mehanism which can be used for sorting one group or sorting more groups of student
 void  sortByGivenArrayOfStudents(Student* studentsInAGroup, int countOfStudents, int group) {
 	int sortingCriteria = 0;
 	int inputSortingMethod = 0;
@@ -378,6 +384,7 @@ void removeStudentFromGroup() {
 	cout << endl;
 }
 
+//reading from console and writing student info in file
 void readStudentInfo() {
 	Student student;
 	int numOfSubjects;
