@@ -66,6 +66,21 @@ string findPath(int group) {
 	return path;
 }
 
+void validateInputNumber(string& input, int& inputNumber) {
+	bool isValid = false;
+	while (!isValid)
+	{
+		if (input[0] < '1' || input[0]>'6' || input.length() > 1)
+		{
+			cout << endl << "Invalid input! Please try again!" << endl;
+			getline(cin, input);
+			continue;
+		}
+		isValid = true;
+	}
+	inputNumber = stoi(input);
+}
+
 void validateGroup(string& inputOfGroup, int& group) {
 	bool isValid = false;
 	while (!isValid)
@@ -488,7 +503,8 @@ void readStudentInfo() {
 int main()
 {
 	int inputNumber = 0;
-	char input[BUFFER_SIZE]{};
+	string input;
+	char buffer[BUFFER_SIZE]{};
 
 	while (inputNumber != 6)
 	{
@@ -501,7 +517,8 @@ int main()
 		cout << " 5.Sort students from different groups.\n";
 		cout << " 6.Exit the program.\n";
 
-		cin >> inputNumber;
+		getline(cin, input);
+		validateInputNumber(input,inputNumber);
 
 		if (inputNumber == 1)
 			readStudentInfo();
@@ -513,11 +530,9 @@ int main()
 			printGroupOfStudents();
 		else if (inputNumber == 5)
 			sortMoreGroupsOfStudents();
-		else if (inputNumber > 6 || inputNumber < 1)
-			cout << endl << "Invalid input! Please try again!" << endl;
 
 		cin.ignore();
 		cout << "Press Enter to continue!";
-		cin.getline(input, BUFFER_SIZE);
+		cin.getline(buffer, BUFFER_SIZE);
 	}
 }
