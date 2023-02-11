@@ -66,39 +66,89 @@ string findPath(int group) {
 	return path;
 }
 
-void validateGroup(int& group) {
-	while ((group < FIRST_GROUP_OF_STUDENTS || group>LAST_GROUP_OF_STUDENTS)&& (group < FIRST_GROUP_OF_STUDENTS+'0' || group>LAST_GROUP_OF_STUDENTS+'0'))
+void validateGroup(string& inputOfGroup, int& group) {
+	bool isValid = false;
+	while (!isValid)
 	{
-		cout << endl << "This group does not exist! Enter valid group: ";
-		cin >> group;
+		if (inputOfGroup[0] < FIRST_GROUP_OF_STUDENTS + '0' || inputOfGroup[0]>LAST_GROUP_OF_STUDENTS + '0' || inputOfGroup.length() > 1)
+		{
+			cout << endl << "This group does not exist! Enter valid group: ";
+			getline(cin, inputOfGroup);
+			continue;
+		}
+		isValid = true;
 	}
+	group = stoi(inputOfGroup);
 	return;
 }
 
-void validateNumberOfSubjects(int& numOfSubjects) {
-	while (numOfSubjects < MIN_COUNT_OF_SUBJECTS || numOfSubjects>MAX_COUNT_OF_SUBJECTS)
+void validateNumberOfSubjects(string& input, int& numOfSubjects) {
+	bool isValid = false;
+	while (!isValid)
 	{
-		cout << endl << "You can enter between 1 and 10 subjects: ";
-		cin >> numOfSubjects;
+		if (input.length() == 1 && (input[0] < MIN_COUNT_OF_SUBJECTS + '0' || input[0]>(MAX_COUNT_OF_SUBJECTS - 1) + '0'))
+		{
+			cout << endl << "Please enter between 1 and 10 subjects: ";
+			getline(cin, input);
+			continue;
+		}
+		else if (input.length() >= 2 && (input[0] != (MAX_COUNT_OF_SUBJECTS / 10) + '0' || input[1] != (MAX_COUNT_OF_SUBJECTS % 10) + '0'))
+		{
+			cout << endl << "Please enter between 1 and 10 subjects: ";
+			getline(cin, input);
+			continue;
+		}
+		isValid = true;
 	}
+	numOfSubjects = stoi(input);
 	return;
 }
 
-void validateGrade(double& grade) {
-	while (grade < MIN_GRADE || grade>MAX_GRADE)
+bool isValidGrade(string input) {
+	bool isValid = true;
+	for (int i = 0; i < input.length(); i++)
 	{
-		cout << endl << "This grade is invalid! Try again: ";
-		cin >> grade;
+		if (i == 0 && (input[0] < MIN_GRADE + '0' || input[0]>MAX_GRADE + '0'))
+			isValid = false;
+		else if (i == 1 && (input[i] != '.' && input[i] != ','))
+			isValid = false;
+		else if (i > 1) {
+			if ((input[0] == MAX_GRADE + '0' && input[i] != '0') || (input[i] < '0' || input[i]>'9'))
+				isValid = false;
+		}
 	}
+	return isValid;
+}
+
+void validateGrade(string& input, double& grade) {
+	bool isValid = false;
+	while (!isValid)
+	{
+		if (!isValidGrade(input))
+		{
+			cout << endl << "This grade is invalid! Try again: ";
+			getline(cin, input);
+		}
+		else
+			isValid = true;
+	}
+	grade = stod(input);
 	return;
 }
 
-void validateSortingMethodAndCriteria(int& method) {
-	while (method != FIRST_VALID_METHOD_CHOICE && method != SECOND_VALID_METHOD_CHOICE)
+void validateSortingMethodAndCriteria(string& input, int& method) {
+	bool isValid = false;
+	while (!isValid)
 	{
-		cout << endl << "Please enter one of the present options: ";
-		cin >> method;
+		if ((input[0] != FIRST_VALID_METHOD_CHOICE + '0' && input[0] != SECOND_VALID_METHOD_CHOICE + '0') || input.length() > 1)
+		{
+			cout << endl << "Please enter one of the present options: ";
+			getline(cin, input);
+			continue;
+		}
+		isValid = true;
 	}
+	method = stoi(input);
 	return;
 }
 
@@ -159,7 +209,6 @@ void putSubjectsIntoStruct(string line, Student& student) {
 	}
 }
 
-//reading file with students from one group and putting them in array
 void putSudentsFromFileInStruct(int group, Student* students, int& indexOfCurrentStudent) {
 	string path = findPath(group);
 	fstream myFile(path, ios::in | ios::app | ios::out);
@@ -217,7 +266,6 @@ void swap(Student& firstStudent, Student& secondStudent) {
 	secondStudent = temp;
 }
 
-//sorting by faculty number both in ascending and descending order
 void sortStudentsByFacultyNumber(Student* students, string sortMethod, int countOfStudents) {
 	for (int i = 0; i < countOfStudents; i++)
 	{
@@ -235,7 +283,6 @@ void sortStudentsByFacultyNumber(Student* students, string sortMethod, int count
 	}
 }
 
-//sorting by average grade both in ascending and descending order 
 void sortStudentsByAverageGrade(Student* students, string sortMethod, int countOfStudents) {
 	findAverageGrades(students);
 	for (int i = 0; i < countOfStudents; i++)
@@ -254,17 +301,17 @@ void sortStudentsByAverageGrade(Student* students, string sortMethod, int countO
 	}
 }
 
-
 //sorting mehanism which can be used for sorting one group or sorting more groups of student
 void  sortByGivenArrayOfStudents(Student* studentsInAGroup, int countOfStudents, int group) {
 	int sortingCriteria = 0;
 	int inputSortingMethod = 0;
+	string methodInput;
 	cout << endl << "Do you want to sort by:  1.Average grade or  2.Faculty Number? ";
-	cin >> sortingCriteria;
-	validateSortingMethodAndCriteria(sortingCriteria);
+	getline(cin, methodInput);
+	validateSortingMethodAndCriteria(methodInput,sortingCriteria);
 	cout << endl << "Do you want to sort them in:  1.Ascending order or  2.Descending order: ";
-	cin >> inputSortingMethod;
-	validateSortingMethodAndCriteria(inputSortingMethod);
+	getline(cin, methodInput);
+	validateSortingMethodAndCriteria(methodInput,inputSortingMethod);
 
 	string sortMethod;
 	if (inputSortingMethod == 1)
@@ -290,22 +337,25 @@ void  sortByGivenArrayOfStudents(Student* studentsInAGroup, int countOfStudents,
 }
 
 void sortMoreGroupsOfStudents() {
+	string input;
 	int numberOfGroups;
 	cout << endl << "Enter how many groups you want to sort: ";
-	cin >> numberOfGroups;
-	validateGroup(numberOfGroups);
+	cin.ignore();
+	getline(cin, input);
+	validateGroup(input, numberOfGroups);
 
-	Student studentsFromMoreGroups[MAX_STUDENTS_IN_GROUP];
+	Student studentsFromMoreGroups[MAX_STUDENTS_FROM_ALL_GROUPS];
 	int indexOfStudents = 0;
 	int currentGroup;
+	string inputOfCurrentGroup;
 	int groupsOfAllStudents = 0;
 
 	for (int i = 0; i < numberOfGroups; i++)
 	{
 		cout << endl << "Enter one of the groups you want to sort: ";
-		cin >> currentGroup;
-		validateGroup(numberOfGroups);
-		
+		getline(cin, inputOfCurrentGroup);
+		validateGroup(inputOfCurrentGroup, currentGroup);
+
 		groupsOfAllStudents = groupsOfAllStudents * 10 + currentGroup;
 		string path = findPath(currentGroup);
 		fstream myFile(path, ios::in | ios::app);
@@ -324,9 +374,11 @@ void sortMoreGroupsOfStudents() {
 
 void printGroupOfStudents() {
 	int group;
+	string inputOfGroup;
 	cout << endl << "Enter the group of students you want to see: ";
-	cin >> group;
-	validateGroup(group);
+	cin.ignore();
+	getline(cin, inputOfGroup);
+	validateGroup(inputOfGroup, group);
 
 	Student studentsFromAGroup[MAX_STUDENTS_IN_GROUP];
 	int countOfStudents = 0;
@@ -341,11 +393,13 @@ void printGroupOfStudents() {
 
 void sortOneGroupOfStudents() {
 	int group;
+	string inputOfGroup;
 	cout << endl << "Enter which group of students to be sorted: ";
-	cin >> group;
-	validateGroup(group);
+	cin.ignore();
+	getline(cin, inputOfGroup);
+	validateGroup(inputOfGroup, group);
 
-	Student studentsInAGroup[MAX_STUDENTS_FROM_ALL_GROUPS];
+	Student studentsInAGroup[MAX_STUDENTS_IN_GROUP];
 	int countOfStudents = 0;
 	putSudentsFromFileInStruct(group, studentsInAGroup, countOfStudents);
 	sortByGivenArrayOfStudents(studentsInAGroup, countOfStudents, group);
@@ -355,10 +409,12 @@ void sortOneGroupOfStudents() {
 
 void removeStudentFromGroup() {
 	int group;
+	string inputOfGroup;
 	string facultyNumOfStudent;
 	cout << endl << "Enter group of a student you want to remove:";
-	cin >> group;
-	validateGroup(group);
+	cin.ignore();
+	getline(cin, inputOfGroup);
+	validateGroup(inputOfGroup, group);
 	cout << endl << "Enter their faculty number:";
 	cin >> facultyNumOfStudent;
 
@@ -387,21 +443,23 @@ void removeStudentFromGroup() {
 //reading from console and writing student info in file
 void readStudentInfo() {
 	Student student;
+	string group;
+	string inputNumOfSubjects;
+	string grade;
 	int numOfSubjects;
 
-	string group;
-
 	cout << endl << "Enter group of student: ";
-	cin >> student.group;
-	validateGroup(student.group);
-	cout << endl << "Name: ";
 	cin.ignore();
+	getline(cin, group);
+	validateGroup(group, student.group);
+	cout << endl << "Name: ";
 	getline(cin, student.name);
 	cout << endl << "Faculty number: ";
 	cin >> student.facultyNumber;
 	cout << endl << "Enter how many subjects will be registered: ";
-	cin >> numOfSubjects;
-	validateNumberOfSubjects(numOfSubjects);
+	cin.ignore();
+	getline(cin, inputNumOfSubjects);
+	validateNumberOfSubjects(inputNumOfSubjects, numOfSubjects);
 
 	for (int i = 0; i < numOfSubjects; i++)
 	{
@@ -409,8 +467,9 @@ void readStudentInfo() {
 		cin >> student.subjects[i];
 
 		cout << endl << "Enter grade: ";
-		cin >> student.grades[i];
-		validateGrade(student.grades[i]);
+		cin.ignore();
+		getline(cin, grade);
+		validateGrade(grade, student.grades[i]);
 	}
 	string path = findPath(student.group);
 	fstream myFile(path, ios::out | ios::app);
@@ -455,7 +514,7 @@ int main()
 		else if (inputNumber == 5)
 			sortMoreGroupsOfStudents();
 		else if (inputNumber > 6 || inputNumber < 1)
-			cout << endl << "Invalid input! Please try again!"<<endl;
+			cout << endl << "Invalid input! Please try again!" << endl;
 
 		cin.ignore();
 		cout << "Press Enter to continue!";
